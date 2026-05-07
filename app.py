@@ -182,6 +182,12 @@ if "results" not in st.session_state:
 # Main content
 st.markdown("# 🎯 Resume Shortlisting System")
 
+# Initialize session state for JD and skills
+if "jd_text_state" not in st.session_state:
+    st.session_state["jd_text_state"] = ""
+if "detected_skills_state" not in st.session_state:
+    st.session_state["detected_skills_state"] = []
+
 # Two column layout for inputs
 col_jd, col_upload = st.columns([3, 2])
 
@@ -191,11 +197,14 @@ with col_jd:
     
     jd_text = st.text_area(
         "Paste the Job Description here:",
-        value="",
+        value=st.session_state["jd_text_state"],
         height=220,
         placeholder="Paste your job description here... (e.g., we need a Python developer with Machine Learning expertise, SQL, Django, and AWS experience...)",
         key="jd_input"
     )
+    
+    # Update session state with current JD
+    st.session_state["jd_text_state"] = jd_text
     
     # Auto-detect skills from JD with improved detection
     detected_skills = []
@@ -206,17 +215,22 @@ with col_jd:
             pattern = r'\b' + re.escape(skill) + r'\b'
             if re.search(pattern, jd_lower):
                 detected_skills.append(skill)
-    
-    # Show auto-detected count
-    if detected_skills:
-        st.success(f"✅ Auto-detected {len(detected_skills)} skill(s) from your JD")
+        detected_skills = sorted(detected_skills)
+        st.session_state["detected_skills_state"] = detected_skills
     else:
-        st.info("💡 Enter or modify JD to auto-detect required skills")
+        detected_skills = st.session_state["detected_skills_state"]
     
+    # Show auto-detected count with better feedback
+    if detected_skills:
+        st.success(f"✅ Auto-detected {len(detected_skills)} skill(s) - Pre-selected below")
+    else:
+        st.info("💡 Paste your job description above to auto-detect required skills")
+    
+    # Multiselect with auto-detected skills pre-selected
     required_skills = st.multiselect(
-        "Required Skills (auto-detected or manually selected):",
+        "Required Skills (these are pre-selected from your JD):",
         options=sorted(SKILLS),
-        default=sorted(detected_skills),
+        default=detected_skills,
         key="skills_select"
     )
 
