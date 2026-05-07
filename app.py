@@ -226,12 +226,22 @@ with col_jd:
     else:
         st.info("💡 Paste your job description above to auto-detect required skills")
     
+    # Store selected skills in session state for persistence
+    if "selected_skills" not in st.session_state:
+        st.session_state["selected_skills"] = []
+    
+    # If detected skills changed, update session state
+    if detected_skills and st.session_state["detected_skills_state"] != detected_skills:
+        st.session_state["selected_skills"] = detected_skills
+    
     # Multiselect with auto-detected skills pre-selected
+    # Use unique key based on detected skills to force re-render when skills change
+    skills_key = f"skills_select_{len(detected_skills)}_{hash(tuple(detected_skills))}"
     required_skills = st.multiselect(
         "Required Skills (these are pre-selected from your JD):",
         options=sorted(SKILLS),
-        default=detected_skills,
-        key="skills_select"
+        default=detected_skills if detected_skills else [],
+        key=skills_key
     )
 
 # Right column: File Upload
