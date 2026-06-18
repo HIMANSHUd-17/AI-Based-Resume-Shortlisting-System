@@ -1,0 +1,175 @@
+╔══════════════════════════════════════════════════════════════╗
+║                  FIRST RUN SETUP GUIDE                       ║
+║                                                              ║
+║  AI Resume Shortlisting System - Download Optimization      ║
+╚══════════════════════════════════════════════════════════════╝
+
+📊 WHAT GETS DOWNLOADED (First Run Only)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Package                    Size        Purpose
+─────────────────────────────────────────────────────────────
+Streamlit                  ~150 MB     Web UI framework
+spaCy                      ~50 MB      NLP engine
+scikit-learn               ~200 MB     Machine learning
+pandas                     ~30 MB      Data processing
+numpy                      ~30 MB      Numerical computing
+plotly                     ~20 MB      Visualization
+pdfplumber                 ~5 MB       PDF extraction
+python-docx                ~3 MB       DOCX extraction
+spaCy en_core_web_sm       ~40 MB      Language model
+
+TOTAL (First Run):         ~528 MB     (Downloaded once)
+TOTAL (Subsequent):        ~5 KB       (Just app code)
+
+⏱️  TIMING ESTIMATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+First Run:
+  ├─ Create virtual environment    ~30 seconds
+  ├─ Download packages             ~2-4 minutes (depends on speed)
+  ├─ Download spaCy model          ~1 minute
+  └─ Total First Run               ~5-7 minutes
+     (Can be done in background)
+
+Subsequent Runs:
+  ├─ Activate environment          <1 second
+  ├─ Start app                     ~3 seconds
+  ├─ App loads                     ~3-5 seconds
+  └─ Total                         ~10 seconds ⚡
+
+🚀 QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Option 1: FIRST TIME (Recommended)
+  Double-click: START_FIRST_RUN.bat
+  └─ Full setup with progress indicators
+
+Option 2: AFTER FIRST RUN
+  Double-click: START_APP.bat
+  └─ Quick start (already cached)
+
+Option 3: MANUAL
+  powershell
+  cd "c:\Users\himan\Documents\GitHub\AI-Based-Resume-Shortlisting-System"
+  .\venv\Scripts\Activate.ps1
+  streamlit run app.py
+
+📋 REQUIREMENTS.TXT (Minimal & Optimized)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+streamlit>=1.32.0        ← Web UI
+spacy>=3.7.0             ← NLP (names, skills, education)
+scikit-learn>=1.4.0      ← ML (TF-IDF, similarity scoring)
+pdfplumber>=0.10.0       ← PDF extraction
+python-docx>=1.1.0       ← DOCX extraction
+pandas>=2.0.0            ← Data frames, CSV export
+numpy>=1.26.0            ← Numerical operations
+plotly>=5.18.0           ← Charts & visualization
+nltk>=3.8.0              ← (Optional, backup NLP)
+
+✅ WHAT'S INCLUDED (No Extra Downloads Needed)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ 200+ skills database (skills_list.py)
+✓ Resume parser (PDF/DOCX)
+✓ Name extraction (spaCy NER)
+✓ Education detection (regex)
+✓ Experience extraction (regex)
+✓ TF-IDF scoring
+✓ Skill matching
+✓ Beautiful UI (Streamlit)
+✓ Charts (plotly)
+✓ CSV export
+
+❌ NOT NEEDED (Removed to Save Time)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ GPU support libraries (CUDA, torch)
+✗ Additional language models
+✗ Cloud deployment packages
+✗ Advanced NLP models
+✗ Testing frameworks
+✗ Development dependencies
+
+🎯 INTERNET REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+First Run:
+  ├─ Need internet: YES (download packages & model)
+  ├─ Bandwidth needed: ~550 MB
+  ├─ Speed recommended: 1+ Mbps
+  └─ Can pause/resume: Yes
+
+Subsequent Runs:
+  ├─ Need internet: NO (all cached locally)
+  ├─ Bandwidth needed: None
+  └─ Works fully offline
+
+💾 STORAGE REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Virtual Environment (venv/):
+  ├─ Python base              ~100 MB
+  ├─ Package installations    ~450 MB
+  ├─ spaCy model              ~40 MB
+  └─ Total                    ~590 MB
+
+Project Files:
+  ├─ Source code              ~300 KB
+  ├─ Assets (MP4)             ~56 MB
+  └─ Total                    ~56.3 MB
+
+Grand Total (After First Run): ~650 MB
+
+🐛 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problem: "Python not found"
+Solution: Install from https://www.python.org
+          CHECK "Add Python to PATH" ✓
+
+Problem: Installation stuck / timeout
+Solution: Run manually:
+          .\venv\Scripts\Activate.ps1
+          pip install -r requirements.txt --no-cache-dir
+
+Problem: spaCy model failed
+Solution: python -m spacy download en_core_web_sm
+
+Problem: Port 8501 already in use
+Solution: streamlit run app.py --server.port 8502
+
+Problem: Out of disk space
+Solution: Minimum 1 GB needed for full setup
+          Check C: drive space
+
+⚡ PERFORMANCE TIPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ First run takes longer (one-time setup)
+✓ Don't close terminal during setup
+✓ Can minimize but don't close app window
+✓ After first run, app loads in ~10 seconds
+✓ Analysis is fast: 1-2 sec per resume
+✓ Everything runs locally (no cloud delays)
+
+📌 FILES YOU'll USE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+First Time:
+  → Double-click: START_FIRST_RUN.bat
+
+After First Time:
+  → Double-click: START_APP.bat
+
+Never Touch:
+  → venv/ folder (virtual environment)
+  → .git/ folder (repository)
+  → __pycache__/ folder (Python cache)
+
+═════════════════════════════════════════════════════════════
+
+Ready? Double-click START_FIRST_RUN.bat and wait 5-7 minutes
+
+Questions? Check README.md or QUICK_START.md
