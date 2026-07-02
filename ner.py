@@ -1,6 +1,7 @@
 import re
 import warnings
 import spacy
+from pathlib import Path
 from skills_list import SKILLS
 
 warnings.filterwarnings('ignore')
@@ -13,19 +14,24 @@ except OSError:
     nlp = None
 
 
-def extract_name(text: str) -> str:
+def extract_name(text: str, source_filename: str = "") -> str:
     """
     Extract candidate name using spaCy NER from entire resume or first 1000 chars.
     
     Args:
         text: Resume text
         
+        source_filename: Optional resume filename used as a fallback
+
     Returns:
         Candidate name or "Unknown"
     """
     try:
-        if not nlp or not text:
-            return "Unknown"
+        if not text:
+            return _fallback_name_from_filename(source_filename)
+
+        if not nlp:
+            return _fallback_name_from_filename(source_filename)
         
         # Process first 1000 chars for better name extraction
         short_text = text[:1000]
@@ -51,10 +57,22 @@ def extract_name(text: str) -> str:
                     if line and not line.startswith('Subject') and not line.startswith('Objective'):
                         return line
         
-        return "Unknown"
+        return _fallback_name_from_filename(source_filename)
     except Exception as e:
         print(f"Warning: Failed to extract name: {str(e)}")
+        return _fallback_name_from_filename(source_filename)
+
+
+def _fallback_name_from_filename(filename: str) -> str:
+    if not filename:
         return "Unknown"
+
+    stem = Path(filename).stem
+    stem = re.sub(r"[_\-]+", " ", stem)
+    stem = re.sub(r"\b(resume|cv|candidate|profile|final|updated|latest)\b", " ", stem, flags=re.IGNORECASE)
+    stem = re.sub(r"\s+", " ", stem).strip(" -_")
+
+    return stem.title() if stem else "Unknown"
 
 
 def extract_skills(text: str) -> list:
@@ -187,7 +205,7 @@ def extract_experience_years(text: str) -> float:
         return 0.0
 
 
-def analyze_resume(text: str, jd_skills: list) -> dict:
+def analyze_resume(text: str, jd_skills: list, source_filename: str = "") -> dict:
     """
     Comprehensive resume analysis extracting all key information.
     
@@ -210,7 +228,7 @@ def analyze_resume(text: str, jd_skills: list) -> dict:
             }
         
         # Extract all information
-        name = extract_name(text)
+        name = extract_name(text, source_filename)
         education = extract_education(text)
         experience_years = extract_experience_years(text)
         skills_found = extract_skills(text)

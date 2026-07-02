@@ -1,11 +1,26 @@
+#   cd C:\Users\himan\Documents\GitHub\AI-Based-Resume-Shortlisting-System
+#  .\.venv\Scripts\python.exe -m streamlit run .\app.py
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import re
+from pathlib import Path
 from parser import parse_resume
 from ner import analyze_resume
 from scorer import compute_tfidf_score, compute_final_score, rank_candidates
 from skills_list import SKILLS
+
+
+def resolve_candidate_name(extracted_name: str, filename: str) -> str:
+    if extracted_name and extracted_name != "Unknown":
+        return extracted_name.strip()
+
+    stem = Path(filename).stem
+    stem = re.sub(r"[_\-]+", " ", stem)
+    stem = re.sub(r"\b(resume|cv|candidate|profile|final|updated|latest)\b", " ", stem, flags=re.IGNORECASE)
+    stem = re.sub(r"\s+", " ", stem).strip(" -_")
+
+    return stem.title() if stem else "Unknown"
 
 # Page configuration
 st.set_page_config(
@@ -309,11 +324,13 @@ if process_button:
                 analysis["skill_match_pct"],
                 analysis["experience_years"]
             )
+
+            candidate_name = resolve_candidate_name(analysis["name"], uploaded_file.name)
             
             # Build result
             result = {
                 "filename": uploaded_file.name,
-                "name": analysis["name"],
+                "name": candidate_name,
                 "education": analysis["education"],
                 "experience_years": analysis["experience_years"],
                 "skills_found": analysis["skills_found"],
