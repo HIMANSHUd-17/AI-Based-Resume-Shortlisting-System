@@ -6,6 +6,18 @@ from skills_list import SKILLS
 
 warnings.filterwarnings('ignore')
 
+
+def _normalize_resume_text(text: str) -> str:
+    """Remove obvious markup/code fragments and normalize whitespace."""
+    if not text:
+        return ""
+
+    cleaned = re.sub(r"<[^>]+>", " ", text)
+    cleaned = re.sub(r"\{\s*[^\}]{0,120}\s*\}", " ", cleaned)
+    cleaned = re.sub(r"/\*.*?\*/", " ", cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r"\s+", " ", cleaned)
+    return cleaned.strip()
+
 # Load spaCy NLP model
 try:
     nlp = spacy.load("en_core_web_sm")
@@ -27,6 +39,7 @@ def extract_name(text: str, source_filename: str = "") -> str:
         Candidate name or "Unknown"
     """
     try:
+        text = _normalize_resume_text(text)
         if not text:
             return _fallback_name_from_filename(source_filename)
 
@@ -86,6 +99,7 @@ def extract_skills(text: str) -> list:
         List of matched skills (deduplicated)
     """
     try:
+        text = _normalize_resume_text(text)
         if not text:
             return []
         
@@ -115,6 +129,7 @@ def extract_education(text: str) -> str:
         Education level or "Not specified"
     """
     try:
+        text = _normalize_resume_text(text)
         if not text:
             return "Not specified"
         
@@ -163,6 +178,7 @@ def extract_experience_years(text: str) -> float:
         Years of experience as float
     """
     try:
+        text = _normalize_resume_text(text)
         if not text:
             return 0.0
         
@@ -217,6 +233,7 @@ def analyze_resume(text: str, jd_skills: list, source_filename: str = "") -> dic
         Dictionary with analysis results
     """
     try:
+        text = _normalize_resume_text(text)
         if not text:
             return {
                 "name": "Unknown",
