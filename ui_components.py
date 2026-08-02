@@ -14,6 +14,66 @@ from constants import COLORS, CHART_COLORSCALE
 
 # ── Layout Helpers ────────────────────────────────────────────────────────────
 
+def render_theme_toggle():
+    """Render a top-right light/dark toggle with automatic system theme default."""
+    components.html(
+        """
+        <script>
+          (() => {
+            const parentWindow = window.parent;
+            const parentDoc = parentWindow.document;
+            const root = parentDoc.documentElement;
+            const storageKey = "ars-theme-preference";
+            const media = parentWindow.matchMedia("(prefers-color-scheme: dark)");
+
+            const getPreference = () => parentWindow.localStorage.getItem(storageKey) || "system";
+            const resolveTheme = (pref) => (pref === "system" ? (media.matches ? "dark" : "light") : pref);
+
+            const ensureButton = () => {
+              let btn = parentDoc.getElementById("ars-theme-toggle-btn");
+              if (btn) return btn;
+              btn = parentDoc.createElement("button");
+              btn.id = "ars-theme-toggle-btn";
+              btn.type = "button";
+              parentDoc.body.appendChild(btn);
+              return btn;
+            };
+
+            const updateButton = (activeTheme) => {
+              const btn = ensureButton();
+              btn.textContent = activeTheme === "dark" ? "🌙 Dark" : "☀️ Light";
+              btn.title = "Switch theme";
+            };
+
+            const applyPreference = (pref) => {
+              const activeTheme = resolveTheme(pref);
+              root.setAttribute("data-app-theme", activeTheme);
+              parentWindow.localStorage.setItem(storageKey, pref);
+              updateButton(activeTheme);
+            };
+
+            const btn = ensureButton();
+            btn.onclick = () => {
+              const currentTheme = resolveTheme(getPreference());
+              applyPreference(currentTheme === "dark" ? "light" : "dark");
+            };
+
+            if (!parentWindow.__arsThemeMediaListenerBound) {
+              media.addEventListener("change", () => {
+                if (getPreference() === "system") applyPreference("system");
+              });
+              parentWindow.__arsThemeMediaListenerBound = true;
+            }
+
+            applyPreference(getPreference());
+          })();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
 def render_page_header():
     """Render the main page title and subtitle."""
     st.markdown(
@@ -161,12 +221,39 @@ def render_candidate_card(candidate: dict, rank: int):
         """).strip()
 
         card_html = dedent(f"""
+                <script>
+                    (() => {{
+                        const key = "ars-theme-preference";
+                        const pref = localStorage.getItem(key) || "system";
+                        const darkBySystem = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        const theme = pref === "system" ? (darkBySystem ? "dark" : "light") : pref;
+                        document.documentElement.setAttribute("data-app-theme", theme);
+                    }})();
+                </script>
                 <style>
                     * {{ box-sizing: border-box; }}
-                    body {{ margin: 0; font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; color: {COLORS['text_primary']}; }}
+                    :root {{
+                        --card-surface: {COLORS['surface']};
+                        --card-surface-alt: {COLORS['surface_alt']};
+                        --card-border: {COLORS['border']};
+                        --card-border-light: {COLORS['border_light']};
+                        --card-text-primary: {COLORS['text_primary']};
+                        --card-text-secondary: {COLORS['text_secondary']};
+                        --card-text-muted: {COLORS['text_muted']};
+                    }}
+                    :root[data-app-theme="dark"] {{
+                        --card-surface: #111827;
+                        --card-surface-alt: #1f2937;
+                        --card-border: #334155;
+                        --card-border-light: #1e293b;
+                        --card-text-primary: #e2e8f0;
+                        --card-text-secondary: #cbd5e1;
+                        --card-text-muted: #94a3b8;
+                    }}
+                    body {{ margin: 0; font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; color: var(--card-text-primary); }}
                     .candidate-card {{
-                        background: {COLORS['surface']};
-                        border: 1px solid {COLORS['border']};
+                        background: var(--card-surface);
+                        border: 1px solid var(--card-border);
                         border-radius: 16px;
                         padding: 0;
                         overflow: hidden;
@@ -194,23 +281,23 @@ def render_candidate_card(candidate: dict, rank: int):
                     .rank-2 {{ background: linear-gradient(135deg, #94a3b8, #64748b); box-shadow: 0 4px 14px rgba(148,163,184,0.3); }}
                     .rank-3 {{ background: linear-gradient(135deg, #b45309, #d97706); box-shadow: 0 4px 14px rgba(180,83,9,0.25); }}
                     .rank-default {{ background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['primary_light']}); box-shadow: 0 4px 14px rgba(99,102,241,0.2); }}
-                    .candidate-name {{ font-size: 1.15rem; font-weight: 700; color: {COLORS['text_primary']}; line-height: 1.2; }}
-                    .candidate-meta {{ font-size: 0.82rem; color: {COLORS['text_muted']}; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 8px; }}
+                    .candidate-name {{ font-size: 1.15rem; font-weight: 700; color: var(--card-text-primary); line-height: 1.2; }}
+                    .candidate-meta {{ font-size: 0.82rem; color: var(--card-text-muted); margin-top: 4px; display: flex; flex-wrap: wrap; gap: 8px; }}
                     .candidate-score-badge {{ margin-left: auto; text-align: center; min-width: 74px; }}
                     .score-number {{ font-size: 1.6rem; font-weight: 800; line-height: 1; }}
-                    .score-label {{ font-size: 0.7rem; font-weight: 500; color: {COLORS['text_muted']}; text-transform: uppercase; letter-spacing: 0.04em; }}
+                    .score-label {{ font-size: 0.7rem; font-weight: 500; color: var(--card-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }}
                     .candidate-card-body {{ padding: 0 24px 20px; }}
-                    .score-bar-track {{ height: 6px; background: {COLORS['border_light']}; border-radius: 3px; overflow: hidden; margin: 12px 0; }}
+                    .score-bar-track {{ height: 6px; background: var(--card-border-light); border-radius: 3px; overflow: hidden; margin: 12px 0; }}
                     .score-bar-fill {{ height: 100%; border-radius: 3px; }}
                     .score-bar-high {{ background: linear-gradient(90deg, #10b981, #34d399); }}
                     .score-bar-mid {{ background: linear-gradient(90deg, #f59e0b, #fbbf24); }}
                     .score-bar-low {{ background: linear-gradient(90deg, #ef4444, #f87171); }}
                     .skills-group {{ margin-top: 12px; }}
-                    .skills-group-title {{ font-size: 0.78rem; font-weight: 600; color: {COLORS['text_muted']}; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }}
+                    .skills-group-title {{ font-size: 0.78rem; font-weight: 600; color: var(--card-text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }}
                     .skill-pill-found {{ display: inline-block; background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 500; margin: 2px 3px; border: 1px solid rgba(16,185,129,0.15); }}
                     .skill-pill-missing {{ display: inline-block; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 500; margin: 2px 3px; border: 1px solid rgba(239,68,68,0.12); }}
-                    .skill-more-badge {{ display: inline-block; background: {COLORS['border_light']}; color: {COLORS['text_muted']}; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; margin: 2px 3px; border: 1px dashed {COLORS['border']}; }}
-                    .info-pill {{ display: inline-flex; align-items: center; gap: 5px; background: {COLORS['surface_alt']}; border: 1px solid {COLORS['border']}; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; color: {COLORS['text_secondary']}; }}
+                    .skill-more-badge {{ display: inline-block; background: var(--card-border-light); color: var(--card-text-muted); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; margin: 2px 3px; border: 1px dashed var(--card-border); }}
+                    .info-pill {{ display: inline-flex; align-items: center; gap: 5px; background: var(--card-surface-alt); border: 1px solid var(--card-border); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--card-text-secondary); }}
                     .top-badge {{ display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: rgba(245,158,11,0.12); color: #b45309; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }}
                 </style>
                 <div class="candidate-card">
@@ -390,8 +477,29 @@ def render_export(results: list):
 def render_footer(version: str):
     """Render the app footer with credit line in an isolated iframe."""
     html = f"""
+    <script>
+      (() => {{
+        const key = "ars-theme-preference";
+        const pref = localStorage.getItem(key) || "system";
+        const darkBySystem = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = pref === "system" ? (darkBySystem ? "dark" : "light") : pref;
+        document.documentElement.setAttribute("data-app-theme", theme);
+      }})();
+    </script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+      :root {{
+        --footer-text: #475569;
+        --footer-muted: #94a3b8;
+        --footer-chip-bg: linear-gradient(135deg, rgba(99,102,241,0.10), rgba(168,85,247,0.10));
+        --footer-chip-border: rgba(99,102,241,0.25);
+      }}
+      :root[data-app-theme="dark"] {{
+        --footer-text: #cbd5e1;
+        --footer-muted: #94a3b8;
+        --footer-chip-bg: linear-gradient(135deg, rgba(99,102,241,0.22), rgba(168,85,247,0.22));
+        --footer-chip-border: rgba(129,140,248,0.45);
+      }}
       body {{
         margin: 0; padding: 0; display: flex; justify-content: center;
         font-family: 'Inter', sans-serif;
@@ -408,19 +516,19 @@ def render_footer(version: str):
       }}
       .footer-version {{
         font-size: 0.78rem;
-        color: #94a3b8;
+        color: var(--footer-muted);
         margin-top: 4px;
       }}
       .footer-credit {{
         margin-top: 20px;
         padding: 14px 32px;
         display: inline-block;
-        background: linear-gradient(135deg, rgba(99,102,241,0.10), rgba(168,85,247,0.10));
-        border: 1.5px solid rgba(99,102,241,0.25);
+        background: var(--footer-chip-bg);
+        border: 1.5px solid var(--footer-chip-border);
         border-radius: 40px;
         font-size: 0.95rem;
         font-weight: 600;
-        color: #475569;
+        color: var(--footer-text);
         letter-spacing: 0.01em;
         transition: all 0.3s ease;
         animation: fadeInUp 0.8s ease-out;

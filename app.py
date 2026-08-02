@@ -1,6 +1,7 @@
 #   cd C:\Users\himan\Documents\GitHub\AI-Based-Resume-Shortlisting-System
 #  .\.venv\Scripts\python.exe -m streamlit run .\app.py
 import streamlit as st
+import streamlit.components.v1 as components
 
 from constants import APP_NAME, APP_ICON, APP_VERSION, APP_DESCRIPTION, PAGE_LAYOUT, SIDEBAR_STATE
 from skills_list import SKILLS
@@ -17,6 +18,66 @@ from ui_components import (
 )
 from processing import detect_skills_from_jd, process_resumes
 
+
+def render_theme_toggle():
+    """Render a top-right light/dark toggle with automatic system theme default."""
+    components.html(
+        """
+        <script>
+          (() => {
+            const parentWindow = window.parent;
+            const parentDoc = parentWindow.document;
+            const root = parentDoc.documentElement;
+            const storageKey = "ars-theme-preference";
+            const media = parentWindow.matchMedia("(prefers-color-scheme: dark)");
+
+            const getPreference = () => parentWindow.localStorage.getItem(storageKey) || "system";
+            const resolveTheme = (pref) => (pref === "system" ? (media.matches ? "dark" : "light") : pref);
+
+            const ensureButton = () => {
+              let btn = parentDoc.getElementById("ars-theme-toggle-btn");
+              if (btn) return btn;
+              btn = parentDoc.createElement("button");
+              btn.id = "ars-theme-toggle-btn";
+              btn.type = "button";
+              parentDoc.body.appendChild(btn);
+              return btn;
+            };
+
+            const updateButton = (activeTheme) => {
+              const btn = ensureButton();
+              btn.textContent = activeTheme === "dark" ? "🌙 Dark" : "☀️ Light";
+              btn.title = "Switch theme";
+            };
+
+            const applyPreference = (pref) => {
+              const activeTheme = resolveTheme(pref);
+              root.setAttribute("data-app-theme", activeTheme);
+              parentWindow.localStorage.setItem(storageKey, pref);
+              updateButton(activeTheme);
+            };
+
+            const btn = ensureButton();
+            btn.onclick = () => {
+              const currentTheme = resolveTheme(getPreference());
+              applyPreference(currentTheme === "dark" ? "light" : "dark");
+            };
+
+            if (!parentWindow.__arsThemeMediaListenerBound) {
+              media.addEventListener("change", () => {
+                if (getPreference() === "system") applyPreference("system");
+              });
+              parentWindow.__arsThemeMediaListenerBound = true;
+            }
+
+            applyPreference(getPreference());
+          })();
+        </script>
+        """,
+        height=1,
+        width=1,
+    )
+
 # ── Page Config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title=APP_NAME,
@@ -27,6 +88,7 @@ st.set_page_config(
 
 # ── Custom CSS ────────────────────────────────────────────────────────────────
 st.markdown(build_css(), unsafe_allow_html=True)
+render_theme_toggle()
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -127,11 +189,16 @@ with col_upload:
         "Choose PDF or DOCX files:",
         type=["pdf", "docx"],
         accept_multiple_files=True,
+        max_upload_size=5,
         key="file_uploader",
     )
 
+    if uploaded_files and len(uploaded_files) > 100:
+        st.warning(f"⚠️ Only the first 100 files will be processed ({len(uploaded_files)} uploaded).")
+        uploaded_files = uploaded_files[:100]
+
     st.metric("📄 Files Uploaded", len(uploaded_files))
-    st.info("✅ Supports: PDF, DOCX formats\n💾 Max file size: 200MB")
+    st.info("✅ Supports: PDF, DOCX formats\n💾 Max file size: 5MB\n📦 Max files: 100")
 
 # ── Action Button ─────────────────────────────────────────────────────────────
 render_divider()

@@ -24,8 +24,53 @@ header {{visibility: hidden;}}
 footer {{visibility: hidden;}}
 
 /* ── Main container ─────────────────────────────────────────────────────────── */
+:root {{
+    --app-bg-start: {COLORS["background"]};
+    --app-bg-mid: #e8ecf1;
+    --app-bg-end: {COLORS["surface_alt"]};
+    --app-surface: {COLORS["surface"]};
+    --app-surface-alt: {COLORS["surface_alt"]};
+    --app-text-primary: {COLORS["text_primary"]};
+    --app-text-secondary: {COLORS["text_secondary"]};
+    --app-text-muted: {COLORS["text_muted"]};
+    --app-border: {COLORS["border"]};
+    --app-border-light: {COLORS["border_light"]};
+    color-scheme: light;
+}}
+
+:root[data-app-theme="dark"] {{
+    --app-bg-start: #0b1220;
+    --app-bg-mid: #111827;
+    --app-bg-end: #1f2937;
+    --app-surface: #111827;
+    --app-surface-alt: #1f2937;
+    --app-text-primary: #e2e8f0;
+    --app-text-secondary: #cbd5e1;
+    --app-text-muted: #94a3b8;
+    --app-border: #334155;
+    --app-border-light: #1e293b;
+    color-scheme: dark;
+}}
+
+@media (prefers-color-scheme: dark) {{
+    :root:not([data-app-theme="light"]) {{
+        --app-bg-start: #0b1220;
+        --app-bg-mid: #111827;
+        --app-bg-end: #1f2937;
+        --app-surface: #111827;
+        --app-surface-alt: #1f2937;
+        --app-text-primary: #e2e8f0;
+        --app-text-secondary: #cbd5e1;
+        --app-text-muted: #94a3b8;
+        --app-border: #334155;
+        --app-border-light: #1e293b;
+        color-scheme: dark;
+    }}
+}}
+
 .stApp {{
-    background: linear-gradient(135deg, {COLORS["background"]} 0%, #e8ecf1 50%, {COLORS["surface_alt"]} 100%);
+    background: linear-gradient(135deg, var(--app-bg-start) 0%, var(--app-bg-mid) 50%, var(--app-bg-end) 100%);
+    color: var(--app-text-primary);
 }}
 
 /* ── Sidebar ────────────────────────────────────────────────────────────────── */
@@ -455,7 +500,7 @@ footer {{visibility: hidden;}}
 /* ── Tabs ───────────────────────────────────────────────────────────────────── */
 .stTabs [data-baseweb="tab-list"] {{
     gap: 8px;
-    background: {COLORS["surface"]};
+    background: var(--app-surface);
     border-radius: 12px;
     padding: 6px;
     border: 1px solid {COLORS["border"]};
@@ -746,6 +791,123 @@ table tbody tr:last-child td {{
 
 ::-webkit-scrollbar-thumb:hover {{
     background: #94a3b8;
+}}
+
+/* ── Theme switcher + adaptive surfaces ─────────────────────────────────────── */
+#ars-theme-toggle-btn {{
+    position: fixed;
+    top: 12px;
+    right: 14px;
+    z-index: 10000;
+    border: 1px solid var(--app-border);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: var(--app-surface);
+    color: var(--app-text-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+}}
+
+#ars-theme-toggle-btn:hover {{
+    border-color: {COLORS["primary"]};
+}}
+
+[data-testid="stAppViewContainer"] .main,
+[data-testid="stAppViewContainer"] .main p,
+[data-testid="stAppViewContainer"] .main label,
+[data-testid="stAppViewContainer"] .main h1,
+[data-testid="stAppViewContainer"] .main h2,
+[data-testid="stAppViewContainer"] .main h3,
+[data-testid="stAppViewContainer"] .main h4 {{
+    color: var(--app-text-primary);
+}}
+
+.metric-card,
+.stTabs [data-baseweb="tab-list"],
+[data-testid="stFileUploaderDropzone"] {{
+    background: var(--app-surface) !important;
+    border-color: var(--app-border) !important;
+}}
+
+.metric-label,
+.score-label,
+.divider-labeled span,
+.empty-state,
+.jd-preview {{
+    color: var(--app-text-muted) !important;
+}}
+
+.metric-value,
+.candidate-name,
+.section-header h3,
+.empty-state h4 {{
+    color: var(--app-text-primary) !important;
+}}
+
+.metric-sub,
+.gradient-subtitle,
+.page-credit,
+.info-pill,
+.jd-preview {{
+    color: var(--app-text-secondary) !important;
+}}
+
+.metric-card,
+.candidate-card,
+.info-pill,
+.jd-preview,
+table td {{
+    border-color: var(--app-border) !important;
+}}
+
+.metric-card,
+.candidate-card,
+table tbody tr {{
+    background: var(--app-surface);
+}}
+
+table thead {{
+    background: linear-gradient(135deg, #1e293b, #334155);
+}}
+
+.stTextArea textarea,
+.stMultiSelect div[data-baseweb="select"] > div,
+.stSelectbox div[data-baseweb="select"] > div {{
+    background: var(--app-surface) !important;
+    color: var(--app-text-primary) !important;
+    border-color: var(--app-border) !important;
+}}
+
+[data-testid="stWidgetLabel"] p,
+[data-testid="stWidgetLabel"] span,
+[data-testid="stMetricLabel"] p,
+[data-testid="stMetricLabel"] div,
+[data-testid="stTextArea"] label p,
+[data-testid="stFileUploader"] label p,
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] div,
+[data-testid="stMarkdownContainer"] p {{
+    color: var(--app-text-secondary) !important;
+}}
+
+[data-testid="stTextArea"] textarea,
+[data-testid="stTextArea"] textarea::placeholder,
+[data-testid="stFileUploaderDropzone"],
+[data-testid="stFileUploaderDropzone"] section,
+[data-testid="stFileUploaderDropzone"] button,
+[data-testid="stFileUploaderDropzoneInstructions"],
+[data-testid="stFileUploaderDropzoneInstructions"] * {{
+    background: var(--app-surface) !important;
+    color: var(--app-text-secondary) !important;
+    border-color: var(--app-border) !important;
+}}
+
+[data-testid="stMetricValue"] div,
+[data-testid="stMetricValue"] p {{
+    color: var(--app-text-primary) !important;
 }}
 
 /* ── Responsive adjustments ─────────────────────────────────────────────────── */
