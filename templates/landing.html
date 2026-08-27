@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}{{ app_name }} — {{ app_description }}{% endblock %}
+
+{% block body %}
+{% include "_navbar.html" %}
+
+<main>
+  {# ── Hero ─────────────────────────────────────────────────────────────── #}
+  <section class="hero">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <p class="hero__eyebrow" data-hero>AI-Powered Candidate Ranking</p>
+      <h1 class="hero__title" data-hero>
+        Shortlist the right resumes,<br>
+        <span class="grad-text">in seconds.</span>
+      </h1>
+      <p class="hero__subtext" data-hero>
+        Paste a job description, upload candidate resumes, and let NLP + TF-IDF
+        rank every profile by skill match and relevance — no more manual screening.
+      </p>
+      <div class="hero__actions" data-hero>
+        <a class="btn btn-primary btn-lg cta-bounce" href="{{ url_for('auth', mode='signup') }}">
+          Try it free <span class="btn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="#how-it-works">See how it works</a>
+      </div>
+      <div class="hero__stats" data-hero>
+        <div class="hero__stat"><strong>200+</strong><span>skills detected</span></div>
+        <div class="hero__stat"><strong>&lt;1s</strong><span>per resume scored</span></div>
+        <div class="hero__stat"><strong>PDF/DOCX</strong><span>auto-parsed</span></div>
+      </div>
+    </div>
+  </section>
+
+  {# ── Features ──────────────────────────────────────────────────────────── #}
+  <section class="section" id="features">
+    <div class="container">
+      <p class="section__eyebrow reveal">Why it works</p>
+      <h2 class="section__title reveal">Built for speed, powered by NLP</h2>
+      <p class="section__sub reveal">Every resume is parsed, analyzed, and scored automatically.</p>
+
+      <div class="features__grid">
+        <article class="feature-card reveal">
+          <div class="feature-card__icon" aria-hidden="true">🔎</div>
+          <h3>Skill detection</h3>
+          <p>Auto-detects required skills straight from the job description.</p>
+        </article>
+        <article class="feature-card reveal">
+          <div class="feature-card__icon" aria-hidden="true">📊</div>
+          <h3>TF-IDF matching</h3>
+          <p>Measures how well each resume aligns with the JD using document similarity.</p>
+        </article>
+        <article class="feature-card reveal">
+          <div class="feature-card__icon" aria-hidden="true">🧠</div>
+          <h3>NER analysis</h3>
+          <p>Extracts names, education, and years of experience with spaCy.</p>
+        </article>
+        <article class="feature-card reveal">
+          <div class="feature-card__icon" aria-hidden="true">🏆</div>
+          <h3>Weighted ranking</h3>
+          <p>Combines skill match, relevance, and experience into one final score.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  {# ── Projects / Portfolio ──────────────────────────────────────────────── #}
+  {#
+    TODO: Replace these placeholder cards with your own projects.
+    Each card: title, a 1–2 sentence description, and tech tags.
+  #}
+  <section class="section section--alt" id="projects">
+    <div class="container">
+      <p class="section__eyebrow reveal">Portfolio</p>
+      <h2 class="section__title reveal">Projects</h2>
+      <p class="section__sub reveal">A few things I've built — swap in your own work below.</p>
+
+      <div class="projects__grid">
+        <article class="project-card">
+          <div class="project-card__thumb" aria-hidden="true">
+            <span class="project-card__emoji">🧠</span>
+          </div>
+          <h3 class="project-card__title">AI Resume Shortlister</h3>
+          <p class="project-card__desc">NLP + TF-IDF engine that ranks candidate resumes against a job description. The tool you're using right now.</p>
+          <div class="project-card__tags">
+            <span class="tag">Python</span><span class="tag">spaCy</span><span class="tag">Flask</span><span class="tag">scikit-learn</span>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <div class="project-card__thumb" aria-hidden="true">
+            <span class="project-card__emoji">📊</span>
+          </div>
+          <h3 class="project-card__title">Your Project Title</h3>
+          <p class="project-card__desc">Add a short description of what the project does, the problem it solves, and what you'd highlight about it.</p>
+          <div class="project-card__tags">
+            <span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <div class="project-card__thumb" aria-hidden="true">
+            <span class="project-card__emoji">🚀</span>
+          </div>
+          <h3 class="project-card__title">Your Project Title</h3>
+          <p class="project-card__desc">Add a short description of what the project does, the problem it solves, and what you'd highlight about it.</p>
+          <div class="project-card__tags">
+            <span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <div class="project-card__thumb" aria-hidden="true">
+            <span class="project-card__emoji">⚙️</span>
+          </div>
+          <h3 class="project-card__title">Your Project Title</h3>
+          <p class="project-card__desc">Add a short description of what the project does, the problem it solves, and what you'd highlight about it.</p>
+          <div class="project-card__tags">
+            <span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  {# ── How it works ──────────────────────────────────────────────────────── #}
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <p class="section__eyebrow reveal">How it works</p>
+      <h2 class="section__title reveal">From job post to shortlist in four steps</h2>
+      <p class="section__sub reveal">No spreadsheets. No manual screening. Just paste, upload, and rank.</p>
+
+      <div class="steps">
+        <article class="step-card reveal">
+          <span class="step-card__number" aria-hidden="true">01</span>
+          <h3>Paste the job description</h3>
+          <p>The system auto-detects the required skills from the JD.</p>
+        </article>
+        <article class="step-card reveal">
+          <span class="step-card__number" aria-hidden="true">02</span>
+          <h3>Upload resumes</h3>
+          <p>Drag &amp; drop PDF or DOCX files — batch upload supported.</p>
+        </article>
+        <article class="step-card reveal">
+          <span class="step-card__number" aria-hidden="true">03</span>
+          <h3>AI analyzes &amp; scores</h3>
+          <p>NLP extracts skills, experience, and education; TF-IDF measures relevance.</p>
+        </article>
+        <article class="step-card reveal">
+          <span class="step-card__number" aria-hidden="true">04</span>
+          <h3>Get your match score</h3>
+          <p>Candidates are ranked with a clear breakdown you can act on.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  {# ── Final CTA ─────────────────────────────────────────────────────────── #}
+  <section class="cta-banner reveal">
+    <div class="container cta-banner__inner">
+      <h2 class="cta-banner__title">Ready to shortlist smarter?</h2>
+      <p class="cta-banner__sub">Create a free account and run your first match in under a minute.</p>
+      <a class="btn btn-primary btn-lg cta-bounce" href="{{ url_for('auth', mode='signup') }}">
+        Get started free <span class="btn-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+{% include "_footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/landing.js') }}" defer></script>
+{% endblock %}

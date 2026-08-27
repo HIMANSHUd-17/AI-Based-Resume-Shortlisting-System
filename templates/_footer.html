@@ -1,0 +1,46 @@
+{#
+  Landing page footer. Fades in on scroll via the .reveal mechanism.
+  Replace the placeholder links/emails with your own.
+#}
+<footer class="footer" id="contact">
+  <div class="container footer__inner">
+    <div class="footer__brand reveal">
+      <span class="navbar__logo" aria-hidden="true">{{ app_icon }}</span>
+      <span class="footer__brand-name">{{ app_name }}</span>
+      <p class="footer__tagline">{{ app_description }}</p>
+    </div>
+
+    <nav class="footer__col reveal" aria-label="Product">
+      <h4 class="footer__heading">Product</h4>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="{{ url_for('auth') }}">Sign in</a>
+      <a href="{{ url_for('auth', mode='signup') }}">Sign up</a>
+    </nav>
+
+    <nav class="footer__col reveal" aria-label="Resources">
+      <h4 class="footer__heading">Resources</h4>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="footer__socials reveal">
+      <h4 class="footer__heading">Connect</h4>
+      <div class="footer__social-row">
+        <a class="social-link" href="#" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.6.5.5 5.6.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.1 1.2a10.7 10.7 0 0 1 5.7 0C17.2 5 18.2 5.3 18.2 5.3c.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.6 18.4.5 12 .5z"/></svg>
+        </a>
+        <a class="social-link" href="#" aria-label="LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45z"/></svg>
+        </a>
+        <a class="social-link" href="#" aria-label="Email">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container footer__bottom reveal">
+    <p>© {{ current_year }} {{ app_name }}. Built with Python, Flask &amp; spaCy.</p>
+  </div>
+</footer>

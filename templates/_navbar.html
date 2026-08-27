@@ -1,0 +1,57 @@
+{#
+  Sticky navbar, shared by all three pages.
+  Expects `page` to be one of: landing | auth | app
+  - landing -> brand + anchor links + Sign In / Sign Up (top-right)
+  - auth    -> minimal brand + "Back to home"
+  - app     -> brand + user avatar / dropdown menu
+#}
+<header class="navbar" id="site-nav">
+  <nav class="navbar__inner container">
+    <a class="navbar__brand" href="{{ url_for('landing') }}">
+      <span class="navbar__logo" aria-hidden="true">{{ app_icon }}</span>
+      <span class="navbar__name">{{ app_name }}</span>
+    </a>
+
+    {% if page == 'landing' %}
+      <div class="navbar__links">
+        <a href="#features">Features</a>
+        <a href="#projects">Projects</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="navbar__actions">
+        <a class="btn btn-ghost" href="{{ url_for('auth', mode='signin') }}">Sign In</a>
+        <a class="btn btn-primary" href="{{ url_for('auth', mode='signup') }}">Sign Up</a>
+      </div>
+
+    {% elif page == 'auth' %}
+      <div class="navbar__actions">
+        <a class="btn btn-ghost" href="{{ url_for('landing') }}">← Back to home</a>
+      </div>
+
+    {% elif page == 'app' %}
+      <div class="navbar__actions">
+        <div class="user-menu" id="user-menu" data-js="user-menu">
+          <button class="user-menu__trigger" type="button"
+                  aria-haspopup="true" aria-expanded="false"
+                  data-js="user-menu-trigger">
+            <span class="avatar" aria-hidden="true">{{ current_user.name[:1]|upper }}</span>
+            <span class="user-menu__name">{{ current_user.name.split()[:1]|join(' ') }}</span>
+            <svg class="user-menu__caret" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="user-menu__dropdown" id="user-menu-dropdown" data-js="user-menu-dropdown">
+            <div class="user-menu__info">
+              <span class="user-menu__full-name">{{ current_user.name }}</span>
+              <span class="user-menu__email">{{ current_user.email }}</span>
+            </div>
+            <div class="user-menu__divider"></div>
+            <button class="user-menu__item" type="button" data-js="logout-btn">Sign out</button>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </nav>
+</header>

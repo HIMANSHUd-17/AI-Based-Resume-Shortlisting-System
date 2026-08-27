@@ -218,6 +218,8 @@ if process_button:
     elif not uploaded_files:
         st.error("❌ Please upload at least one resume")
     elif not required_skills:
+
+    
         st.error("❌ Please select at least one required skill")
     else:
         progress_bar = st.progress(0)

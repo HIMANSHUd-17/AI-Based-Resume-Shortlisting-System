@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — {{ app_name }}{% endblock %}
+
+{% block body %}
+{% include "_navbar.html" %}
+
+<main class="app-page">
+  <div class="container">
+    <header class="app-page__header reveal">
+      <h1 class="app-page__title">Resume Shortlister</h1>
+      <p class="app-page__sub">Paste a job description, add resumes, and run the AI match.</p>
+    </header>
+
+    <section class="app-inputs">
+      <div class="card jd-card reveal">
+        <label class="field__label" for="jd-text">Job Description</label>
+        <textarea class="field__input field__textarea" id="jd-text" rows="9"
+                  placeholder="Paste the job description here... e.g. We are looking for a Python developer with machine learning experience, SQL, and AWS..."></textarea>
+        <p class="field__hint">Tip: include tech keywords (Python, SQL, AWS, Docker…) for better skill detection.</p>
+        <p class="field__error" id="jd-error" hidden></p>
+      </div>
+
+      <div class="card upload-card reveal">
+        <label class="field__label">Resumes</label>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload resumes">
+          <div class="dropzone__icon" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p class="dropzone__main"><strong>Drag &amp; drop</strong> resumes here, or <span class="link">browse files</span></p>
+          <p class="dropzone__hint">PDF or DOCX · up to 5 MB each · multiple files</p>
+          <input type="file" id="file-input" accept=".pdf,.docx" multiple hidden>
+        </div>
+        <p class="field__error" id="files-error" hidden></p>
+        <ul class="file-list" id="file-list" aria-live="polite"></ul>
+      </div>
+    </section>
+
+    <div class="app-actions reveal">
+      <button class="btn btn-primary btn-lg btn-run" id="run-match" data-js="run-match" disabled>
+        <span class="btn-run__label">🚀 Run Match</span>
+        <span class="btn-run__spinner" aria-hidden="true"></span>
+      </button>
+      <p class="app-actions__hint" id="run-hint">Add a JD and at least one resume to enable the match.</p>
+    </div>
+
+    <section class="results" id="results" aria-live="polite">
+      {# Skeleton loading state is injected here while the match runs.
+         Ranked results are rendered here afterwards. #}
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+{% endblock %}
