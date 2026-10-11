@@ -26,6 +26,7 @@
   const skillCatalogEl = document.getElementById('skill-catalog');
   const runBtn = document.getElementById('run-match');
   const downloadBtn = document.getElementById('download-csv');
+  const candidateLimit = document.getElementById('candidate-limit');
   const runHint = document.getElementById('run-hint');
   const resultsEl = document.getElementById('results');
 
@@ -314,15 +315,21 @@
     const top = data.results[0];
     const row = el('div', 'result-row results__summary');
     const left = el('div', 'summary-top');
+    const names = el('ol', 'summary-candidates');
+    data.results.forEach((candidate) => {
+      const item = el('li', '', `#${candidate.rank} ${candidate.name}`);
+      names.appendChild(item);
+    });
     left.append(
-      el('p', 'summary-label', 'Best match'),
-      el('h3', 'summary-name', top.name),
+      el('p', 'summary-label', `Best ${data.results.length} match${data.results.length === 1 ? '' : 'es'}`),
+      el('h3', 'summary-name', 'Selected candidates'),
+      names,
       el(
         'p',
         'summary-meta',
-        `#${top.rank} candidate · ${top.experience_years ? `${top.experience_years} yr${top.experience_years > 1 ? 's' : ''} experience` : 'Fresher'} · ${top.education}`
+        `Top score: ${pct(top.final_score)}% · ${top.experience_years ? `${top.experience_years} yr${top.experience_years > 1 ? 's' : ''} experience` : 'Fresher'} · ${top.education}`
       ),
-      el('span', 'summary-badge', 'Top candidate')
+      el('span', 'summary-badge', `${data.results.length} candidate${data.results.length === 1 ? '' : 's'} selected`)
     );
     row.append(left, buildRing(top.final_score, 'top'));
     return row;
@@ -367,25 +374,45 @@
     body.appendChild(breakdown);
 
     // skills found / missing
-    const chips = (list, cls) => {
+    const chips = (list, cls, label) => {
       const wrap = el('div', 'skills-block');
-      wrap.appendChild(el('h4', '', `Skills found (${list.length})`));
+      wrap.appendChild(el('h4', '', `${label} (${list.length})`));
       const container = el('div', 'skills-block__chips');
-      const shown = list.slice(0, 14);
-      shown.forEach((s) => container.appendChild(el('span', `tag ${cls}`, s)));
-      if (list.length > shown.length) container.appendChild(el('span', 'tag', `+${list.length - shown.length} more`));
+      const initialCount = 14;
+      const render = (expanded) => {
+        container.textContent = '';
+        const shown = expanded ? list : list.slice(0, initialCount);
+        shown.forEach((s) => container.appendChild(el('span', `tag ${cls}`, s)));
+        if (list.length > initialCount) {
+          const toggle = el('button', 'tag tag--toggle', expanded ? 'Show less' : `+${list.length - initialCount} more`);
+          toggle.type = 'button';
+          toggle.addEventListener('click', () => render(!expanded));
+          container.appendChild(toggle);
+        }
+      };
+      render(false);
       wrap.appendChild(container);
       return wrap;
     };
 
-    if (c.skills_found.length) body.appendChild(chips(c.skills_found, 'tag--found'));
+    if (c.skills_found.length) body.appendChild(chips(c.skills_found, 'tag--found', 'Skills found'));
     if (c.skills_missing.length) {
       const wrap = el('div', 'skills-block');
       wrap.appendChild(el('h4', '', 'Skills missing'));
       const container = el('div', 'skills-block__chips');
-      const shown = c.skills_missing.slice(0, 10);
-      shown.forEach((s) => container.appendChild(el('span', 'tag tag--missing', s)));
-      if (c.skills_missing.length > shown.length) container.appendChild(el('span', 'tag tag--missing', `+${c.skills_missing.length - shown.length} more`));
+      const initialCount = 10;
+      const render = (expanded) => {
+        container.textContent = '';
+        const shown = expanded ? c.skills_missing : c.skills_missing.slice(0, initialCount);
+        shown.forEach((s) => container.appendChild(el('span', 'tag tag--missing', s)));
+        if (c.skills_missing.length > initialCount) {
+          const toggle = el('button', 'tag tag--missing tag--toggle', expanded ? 'Show less' : `+${c.skills_missing.length - initialCount} more`);
+          toggle.type = 'button';
+          toggle.addEventListener('click', () => render(!expanded));
+          container.appendChild(toggle);
+        }
+      };
+      render(false);
       wrap.appendChild(container);
       body.appendChild(wrap);
     }
@@ -448,6 +475,7 @@
       const formData = new FormData();
       formData.append('job_description', jd);
       formData.append('skills', JSON.stringify(selectedSkills));
+      formData.append('candidate_limit', candidateLimit.value);
       files.forEach((f) => formData.append('files', f, f.name));
 
       const res = await fetch('/api/match', { method: 'POST', body: formData });

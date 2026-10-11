@@ -214,6 +214,10 @@ def dashboard():
 def api_match():
     jd_text = request.form.get("job_description", "").strip()
     files, file_error = _collect_files()
+    try:
+        candidate_limit = max(1, min(int(request.form.get("candidate_limit", "1")), 100))
+    except (TypeError, ValueError):
+        candidate_limit = 1
 
     if not jd_text:
         return jsonify({"ok": False, "error": "Please paste a job description first."}), 400
@@ -246,7 +250,7 @@ def api_match():
             }
         ), 422
 
-    results = process_resumes(jd_text, files, required_skills)
+    results = process_resumes(jd_text, files, required_skills)[:candidate_limit]
 
     if not results:
         return jsonify(
@@ -260,6 +264,7 @@ def api_match():
             "jd_skills": required_skills,
             "total_files": len(files),
             "processed": len(results),
+            "candidate_limit": candidate_limit,
         }
     )
 

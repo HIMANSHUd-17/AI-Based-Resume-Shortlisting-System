@@ -452,6 +452,10 @@ body.page-leave {
 .skill-picker__input { min-width: 0; flex: 1; }
 .skill-picker__button { flex: 0 0 auto; }
 .upload-guidance { margin: 0.75rem 0 0; color: var(--text-muted); font-size: 0.8rem; line-height: 1.45; }
+.hire-count { margin: 0.9rem 0 1rem; }
+.hire-count .field__label { display: block; margin-bottom: 0.45rem; }
+.hire-count__select { width: 100%; cursor: pointer; }
+.hire-count .field__hint { margin-top: 0.4rem; }
 
 /* how it works */
 .steps {
@@ -908,6 +912,8 @@ body.page-leave {
   margin: 0 0 0.3rem;
 }
 .results__summary .summary-name { margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+.summary-candidates { margin: 0.65rem 0 0; padding-left: 1.3rem; color: var(--text-1); font-weight: 600; }
+.summary-candidates li { margin: 0.2rem 0; }
 .results__summary .summary-meta { margin: 0.25rem 0 0; color: var(--text-2); font-size: 0.9rem; }
 .results__summary .summary-badge {
   display: inline-block;
@@ -1018,6 +1024,7 @@ body.page-leave {
 .skills-block__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .tag--found { color: var(--success-dark); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.22); }
 .tag--missing { color: var(--danger); background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.2); }
+.tag--toggle { cursor: pointer; font: inherit; }
 
 /* empty / info states */
 .results-empty {

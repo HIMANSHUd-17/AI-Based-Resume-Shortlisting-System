@@ -41,6 +41,15 @@
 
       <div class="card upload-card reveal">
         <label class="field__label">Resumes</label>
+        <div class="hire-count">
+          <label class="field__label" for="candidate-limit">Candidates to hire</label>
+          <select class="field__input hire-count__select" id="candidate-limit">
+            {% for count in range(1, 21) %}
+              <option value="{{ count }}"{% if count == 1 %} selected{% endif %}>Top {{ count }} candidate{% if count != 1 %}s{% endif %}</option>
+            {% endfor %}
+          </select>
+          <p class="field__hint">The best selected candidates will appear in the ranking.</p>
+        </div>
         <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload resumes">
           <div class="dropzone__icon" aria-hidden="true">
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
