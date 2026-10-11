@@ -13,13 +13,21 @@ A demo account is pre-seeded on first run so the app is immediately usable:
 """
 
 import sqlite3
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # DB lives next to this file so it is easy to find and easy to wipe.
-DB_PATH = Path(__file__).resolve().parent / "resume_shortlister.db"
+DB_PATH = Path(
+    os.environ.get(
+        "AUTH_DB_PATH",
+        "/tmp/resume_shortlister.db" if os.environ.get("VERCEL") else str(
+            Path(__file__).resolve().parent / "resume_shortlister.db"
+        ),
+    )
+)
 
 DEMO_EMAIL = "demo@shortlister.app"
 DEMO_PASSWORD = "demo1234"

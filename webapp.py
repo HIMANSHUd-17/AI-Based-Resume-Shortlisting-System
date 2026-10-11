@@ -35,6 +35,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "ars-dev-secret-change-me")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB total upload cap
 MAX_FILE_BYTES = 5 * 1024 * 1024  # 5 MB per resume, matching the old Streamlit app
+auth_store.init_db()
 
 
 # ── Session / auth helpers ────────────────────────────────────────────────────

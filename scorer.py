@@ -1,9 +1,54 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
+import math
+import re
+from collections import Counter
+
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+except ImportError:
+    TfidfVectorizer = None
+    cosine_similarity = None
 import warnings
 
 warnings.filterwarnings('ignore')
+
+_STOP_WORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
+    "in", "is", "it", "of", "on", "or", "that", "the", "this", "to",
+    "with",
+}
+
+
+def _tokenize(text: str) -> list[str]:
+    return [
+        token for token in re.findall(r"[a-z0-9]+", text.lower())
+        if token not in _STOP_WORDS
+    ]
+
+
+def _fallback_tfidf_score(jd_text: str, resume_text: str) -> float:
+    documents = [_tokenize(jd_text), _tokenize(resume_text)]
+    term_counts = [Counter(document) for document in documents]
+    vocabulary = set(term_counts[0]) | set(term_counts[1])
+    if not vocabulary:
+        return 0.0
+
+    vectors = []
+    for counts in term_counts:
+        total = sum(counts.values()) or 1
+        vector = {}
+        for term in vocabulary:
+            document_frequency = sum(term in other for other in term_counts)
+            inverse_frequency = math.log((1 + len(documents)) / (1 + document_frequency)) + 1
+            vector[term] = (counts[term] / total) * inverse_frequency
+        vectors.append(vector)
+
+    numerator = sum(vectors[0][term] * vectors[1][term] for term in vocabulary)
+    left_length = math.sqrt(sum(value * value for value in vectors[0].values()))
+    right_length = math.sqrt(sum(value * value for value in vectors[1].values()))
+    if not left_length or not right_length:
+        return 0.0
+    return numerator / (left_length * right_length)
 
 
 def compute_tfidf_score(jd_text: str, resume_text: str) -> float:
@@ -21,7 +66,9 @@ def compute_tfidf_score(jd_text: str, resume_text: str) -> float:
         if not jd_text or not resume_text:
             return 0.0
         
-        # Create TF-IDF vectorizer
+        if TfidfVectorizer is None or cosine_similarity is None:
+            return _fallback_tfidf_score(jd_text, resume_text)
+
         vectorizer = TfidfVectorizer(
             stop_words='english',
             ngram_range=(1, 2),
