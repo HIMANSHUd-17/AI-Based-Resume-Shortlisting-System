@@ -427,6 +427,32 @@ body.page-leave {
 .feature-card h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
 .feature-card p { margin: 0; color: var(--text-2); font-size: 0.95rem; }
 
+/* skill picker */
+.skill-picker {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.skill-picker__heading,
+.skill-picker__add { display: flex; align-items: center; gap: 0.75rem; }
+.skill-picker__heading { justify-content: space-between; margin-bottom: 0.65rem; }
+.skill-picker__heading .field__label { margin: 0; }
+.skill-picker__status { color: var(--text-muted); font-size: 0.78rem; }
+.skill-picker__chips { display: flex; flex-wrap: wrap; gap: 0.45rem; min-height: 1.8rem; }
+.skill-picker__empty { color: var(--text-muted); font-size: 0.85rem; }
+.skill-chip {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 999px;
+  color: var(--primary-dark);
+  background: rgba(99, 102, 241, 0.1);
+  cursor: pointer;
+}
+.skill-picker__add { margin-top: 0.75rem; }
+.skill-picker__input { min-width: 0; flex: 1; }
+.skill-picker__button { flex: 0 0 auto; }
+.upload-guidance { margin: 0.75rem 0 0; color: var(--text-muted); font-size: 0.8rem; line-height: 1.45; }
+
 /* how it works */
 .steps {
   display: grid;

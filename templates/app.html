@@ -17,6 +17,24 @@
         <label class="field__label" for="jd-text">Job Description</label>
         <textarea class="field__input field__textarea" id="jd-text" rows="9"
                   placeholder="Paste the job description here... e.g. We are looking for a Python developer with machine learning experience, SQL, and AWS..."></textarea>
+        <div class="skill-picker" id="skill-picker">
+          <div class="skill-picker__heading">
+            <span class="field__label">Required skills</span>
+            <span class="skill-picker__status" id="skill-status">Detected from your job description</span>
+          </div>
+          <div class="skill-picker__chips" id="skill-chips" aria-live="polite">
+            <span class="skill-picker__empty">Skills will appear as you type.</span>
+          </div>
+          <div class="skill-picker__add">
+            <input class="field__input skill-picker__input" id="skill-input" type="text"
+                   list="skill-options" placeholder="Add another skill">
+            <datalist id="skill-options">
+              {% for skill in skill_catalog %}<option value="{{ skill }}">{% endfor %}
+            </datalist>
+            <button class="btn btn-ghost skill-picker__button" id="add-skill" type="button">Add skill</button>
+          </div>
+          <script type="application/json" id="skill-catalog">{{ skill_catalog|tojson }}</script>
+        </div>
         <p class="field__hint">Tip: include tech keywords (Python, SQL, AWS, Docker…) for better skill detection.</p>
         <p class="field__error" id="jd-error" hidden></p>
       </div>
@@ -37,6 +55,7 @@
           <input type="file" id="file-input" accept=".pdf,.docx" multiple hidden>
         </div>
         <p class="field__error" id="files-error" hidden></p>
+        <p class="upload-guidance">Use the candidate's name in each filename, such as <strong>Himanshu_Deshmukh_Resume.pdf</strong>.</p>
         <ul class="file-list" id="file-list" aria-live="polite"></ul>
       </div>
     </section>

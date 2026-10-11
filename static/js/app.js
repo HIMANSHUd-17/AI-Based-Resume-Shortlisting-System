@@ -19,6 +19,11 @@
   const dropzone = document.getElementById('dropzone');
   const fileListEl = document.getElementById('file-list');
   const filesError = document.getElementById('files-error');
+  const skillInput = document.getElementById('skill-input');
+  const skillChips = document.getElementById('skill-chips');
+  const skillStatus = document.getElementById('skill-status');
+  const addSkillBtn = document.getElementById('add-skill');
+  const skillCatalogEl = document.getElementById('skill-catalog');
   const runBtn = document.getElementById('run-match');
   const runHint = document.getElementById('run-hint');
   const resultsEl = document.getElementById('results');
@@ -28,6 +33,8 @@
   const MAX_FILE_BYTES = 5 * 1024 * 1024;
   const RING_CIRCUMFERENCE = 264; // 2π · r(42)
   let files = []; // File[]
+  let selectedSkills = [];
+  const skillCatalog = skillCatalogEl ? JSON.parse(skillCatalogEl.textContent) : [];
 
   // ── Helpers ─────────────────────────────────────────────────────────────
   function showError(el, message) {
@@ -56,6 +63,51 @@
     runHint.textContent = ready
       ? `Ready to match ${files.length} resume${files.length > 1 ? 's' : ''}.`
       : 'Add a job description and at least one resume to enable the match.';
+  }
+
+  function detectSkills(text) {
+    return skillCatalog.filter((skill) => {
+      const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const simpleSkill = /^[a-z0-9]+$/i.test(skill);
+      return simpleSkill
+        ? new RegExp(`\\b${escaped}\\b`, 'i').test(text)
+        : text.toLowerCase().includes(skill.toLowerCase());
+    });
+  }
+
+  function renderSkillChips() {
+    skillChips.textContent = '';
+    if (!selectedSkills.length) {
+      skillChips.appendChild(el('span', 'skill-picker__empty', 'Skills will appear as you type.'));
+      skillStatus.textContent = 'Detected from your job description';
+      return;
+    }
+
+    skillStatus.textContent = `${selectedSkills.length} skill${selectedSkills.length === 1 ? '' : 's'} selected`;
+    selectedSkills.forEach((skill) => {
+      const chip = el('button', 'skill-chip', skill);
+      chip.type = 'button';
+      chip.title = `Remove ${skill}`;
+      chip.addEventListener('click', () => {
+        selectedSkills = selectedSkills.filter((item) => item !== skill);
+        renderSkillChips();
+      });
+      skillChips.appendChild(chip);
+    });
+  }
+
+  function syncDetectedSkills() {
+    const detected = detectSkills(jdText.value);
+    selectedSkills = [...new Set([...selectedSkills, ...detected])];
+    renderSkillChips();
+  }
+
+  function addSkill() {
+    const value = skillInput.value.trim().toLowerCase();
+    const skill = skillCatalog.find((item) => item.toLowerCase() === value);
+    if (skill && !selectedSkills.includes(skill)) selectedSkills.push(skill);
+    skillInput.value = '';
+    renderSkillChips();
   }
 
   // ── File collection ─────────────────────────────────────────────────────
@@ -147,7 +199,15 @@
   jdText.addEventListener('input', () => {
     hideError(jdError);
     jdText.classList.remove('field--error');
+    syncDetectedSkills();
     updateRunState();
+  });
+  addSkillBtn.addEventListener('click', addSkill);
+  skillInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      addSkill();
+    }
   });
 
   function renderSkeleton() {
@@ -346,6 +406,7 @@
     try {
       const formData = new FormData();
       formData.append('job_description', jd);
+      formData.append('skills', JSON.stringify(selectedSkills));
       files.forEach((f) => formData.append('files', f, f.name));
 
       const res = await fetch('/api/match', { method: 'POST', body: formData });

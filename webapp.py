@@ -11,6 +11,7 @@ This is a demo-grade auth layer (see auth_store.py). Run with:
 """
 
 import os
+import json
 import re
 from datetime import datetime
 from functools import wraps
@@ -29,6 +30,7 @@ from flask import (
 import auth_store
 from constants import ALLOWED_EXTENSIONS, APP_DESCRIPTION, APP_ICON, APP_NAME
 from processing import detect_skills_from_jd, process_resumes
+from skills_list import SKILLS
 
 app = Flask(__name__)
 # Fixed dev secret is fine for a local tool; override with SECRET_KEY in prod.
@@ -144,6 +146,7 @@ def _inject_globals():
         "app_description": APP_DESCRIPTION,
         "current_user": g.get("user"),
         "current_year": datetime.now().year,
+        "skill_catalog": sorted(SKILLS),
     }
 
 
@@ -220,18 +223,30 @@ def api_match():
         return jsonify({"ok": False, "error": "Please add at least one resume."}), 400
 
     jd_skills = detect_skills_from_jd(jd_text)
-    if not jd_skills:
+    try:
+        requested_skills = json.loads(request.form.get("skills", "[]"))
+    except (TypeError, json.JSONDecodeError):
+        requested_skills = []
+    selected_skills = sorted({
+        str(skill).strip()
+        for skill in requested_skills
+        if str(skill).strip() in SKILLS
+    })
+    required_skills = sorted(set(jd_skills).union(selected_skills))
+
+    if not required_skills:
         return jsonify(
             {
                 "ok": False,
                 "error": (
                     "No known skills detected in the job description. "
-                    "Try adding a few technical keywords (Python, SQL, AWS...)."
+                    "Add a skill below the job description or include keywords "
+                    "such as Python, SQL, or AWS."
                 ),
             }
         ), 422
 
-    results = process_resumes(jd_text, files, jd_skills)
+    results = process_resumes(jd_text, files, required_skills)
 
     if not results:
         return jsonify(
@@ -242,7 +257,7 @@ def api_match():
         {
             "ok": True,
             "results": results,
-            "jd_skills": jd_skills,
+            "jd_skills": required_skills,
             "total_files": len(files),
             "processed": len(results),
         }
