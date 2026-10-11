@@ -1,8 +1,12 @@
 import re
 import warnings
-import spacy
 from pathlib import Path
 from skills_list import SKILLS
+
+try:
+    import spacy
+except ImportError:
+    spacy = None
 
 warnings.filterwarnings('ignore')
 
@@ -20,8 +24,8 @@ def _normalize_resume_text(text: str) -> str:
 
 # Load spaCy NLP model
 try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
+    nlp = spacy.load("en_core_web_sm") if spacy else None
+except (OSError, ImportError):
     print("Warning: spaCy model 'en_core_web_sm' not found. Please run: python -m spacy download en_core_web_sm")
     nlp = None
 
