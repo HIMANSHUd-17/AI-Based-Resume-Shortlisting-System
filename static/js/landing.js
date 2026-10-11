@@ -3,7 +3,6 @@
  *  - hero: heading / subtext / CTA slide up in a 100ms-staggered sequence
  *    (hero CTA pops in via the CSS `cta-in` keyframe — same ease-out language
  *    as everything else entering the screen)
- *  - project cards: scroll-reveal + staggered entrance (GSAP + IntersectionObserver)
  *
  * Everything respects prefers-reduced-motion (elements appear instantly).
  */
@@ -44,39 +43,7 @@
     );
   }
 
-  // ── Project cards: scroll-reveal + stagger ──────────────────────────────
-  function initProjects() {
-    const cards = Array.from(document.querySelectorAll('.project-card'));
-    if (!cards.length) return;
-
-    if (reduceMotion || !hasGSAP || !hasObserver) {
-      return; // cards are visible by default
-    }
-
-    gsap.set(cards, { opacity: 0, y: 32 });
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = cards.indexOf(entry.target);
-          gsap.to(entry.target, {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            ease: 'power2.out',
-            delay: idx * 0.1, // staggered, not all at once
-          });
-          io.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.2, rootMargin: '0px 0px -40px 0px' }
-    );
-    cards.forEach((card) => io.observe(card));
-  }
-
   runWhenReady(() => {
     initHero();
-    initProjects();
   });
 })();

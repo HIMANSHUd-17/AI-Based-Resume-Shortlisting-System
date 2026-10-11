@@ -427,59 +427,6 @@ body.page-leave {
 .feature-card h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
 .feature-card p { margin: 0; color: var(--text-2); font-size: 0.95rem; }
 
-/* projects */
-.projects__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-}
-.project-card {
-  position: relative;
-  padding: 1.75rem;
-  border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform var(--t-hover) var(--ease-in-out),
-    opacity var(--t-hover) var(--ease-in-out);
-}
-/* GPU-friendly shadow: fades a pseudo-element in instead of animating box-shadow */
-.project-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  opacity: 0;
-  transition: opacity var(--t-hover) var(--ease-in-out);
-  pointer-events: none;
-}
-.project-card:hover { transform: var(--lift-card); }
-.project-card:hover::before { opacity: 1; }
-.project-card__thumb {
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.16));
-  margin-bottom: 1.1rem;
-}
-.project-card__emoji { font-size: 2.4rem; }
-.project-card__title { margin: 0 0 0.5rem; font-size: 1.15rem; font-weight: 700; }
-.project-card__desc { margin: 0 0 1rem; color: var(--text-2); font-size: 0.92rem; }
-.project-card__tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-.tag {
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--primary-dark);
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.18);
-}
-
 /* how it works */
 .steps {
   display: grid;
