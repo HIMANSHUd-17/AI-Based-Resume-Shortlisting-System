@@ -61,10 +61,15 @@
     </section>
 
     <div class="app-actions reveal">
-      <button class="btn btn-primary btn-lg btn-run" id="run-match" data-js="run-match" disabled>
-        <span class="btn-run__label">🚀 Run Match</span>
-        <span class="btn-run__spinner" aria-hidden="true"></span>
-      </button>
+      <div class="app-actions__buttons">
+        <button class="btn btn-primary btn-lg btn-run" id="run-match" data-js="run-match" disabled>
+          <span class="btn-run__label">🚀 Run Match</span>
+          <span class="btn-run__spinner" aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-ghost btn-lg btn-download" id="download-csv" type="button" disabled>
+          <span aria-hidden="true">↓</span> Download CSV
+        </button>
+      </div>
       <p class="app-actions__hint" id="run-hint">Add a JD and at least one resume to enable the match.</p>
     </div>
 

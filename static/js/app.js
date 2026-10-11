@@ -25,6 +25,7 @@
   const addSkillBtn = document.getElementById('add-skill');
   const skillCatalogEl = document.getElementById('skill-catalog');
   const runBtn = document.getElementById('run-match');
+  const downloadBtn = document.getElementById('download-csv');
   const runHint = document.getElementById('run-hint');
   const resultsEl = document.getElementById('results');
 
@@ -34,6 +35,7 @@
   const RING_CIRCUMFERENCE = 264; // 2π · r(42)
   let files = []; // File[]
   let selectedSkills = [];
+  let latestResults = [];
   const skillCatalog = skillCatalogEl ? JSON.parse(skillCatalogEl.textContent) : [];
 
   // ── Helpers ─────────────────────────────────────────────────────────────
@@ -238,6 +240,43 @@
     resultsEl.appendChild(box);
   }
 
+  function csvCell(value) {
+    const text = Array.isArray(value) ? value.join(' | ') : String(value ?? '');
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+
+  function downloadCsv() {
+    if (!latestResults.length) return;
+
+    const headers = [
+      'Rank', 'Candidate Name', 'Resume Filename', 'Final Score',
+      'Skill Match', 'TF-IDF Relevance', 'Experience (Years)', 'Education',
+      'Skills Found', 'Skills Missing',
+    ];
+    const rows = latestResults.map((candidate) => [
+      candidate.rank,
+      candidate.name,
+      candidate.filename,
+      `${pct(candidate.final_score)}%`,
+      `${pct(candidate.skill_match_pct)}%`,
+      `${pct(candidate.tfidf_score)}%`,
+      candidate.experience_years,
+      candidate.education,
+      candidate.skills_found,
+      candidate.skills_missing,
+    ]);
+    const csv = [headers, ...rows].map((row) => row.map(csvCell).join(',')).join('\r\n');
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `resume-shortlist-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   // ── Result rendering ────────────────────────────────────────────────────
   function pct(value) {
     return Math.round((value || 0) * 100);
@@ -399,6 +438,8 @@
     }
     hideError(jdError);
     hideError(filesError);
+    latestResults = [];
+    downloadBtn.disabled = true;
 
     runBtn.classList.add('is-loading');
     renderSkeleton();
@@ -413,6 +454,8 @@
       const data = await res.json();
 
       if (data.ok) {
+        latestResults = data.results;
+        downloadBtn.disabled = false;
         renderResults(data);
       } else {
         showResultsError(data.error || 'The match could not be completed. Please try again.');
@@ -424,6 +467,7 @@
       updateRunState();
     }
   });
+  downloadBtn.addEventListener('click', downloadCsv);
 
   // ── Init ────────────────────────────────────────────────────────────────
   updateRunState();
