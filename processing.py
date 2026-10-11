@@ -15,12 +15,9 @@ from constants import JD_MIN_LENGTH
 
 def resolve_candidate_name(extracted_name: str, filename: str) -> str:
     """
-    Determine the best candidate name: prefer NER-extracted name, fall back
-    to a cleaned-up version of the filename.
+    Determine the best candidate name: prefer a meaningful filename, then
+    fall back to NER extraction and finally the cleaned filename.
     """
-    if extracted_name and extracted_name != "Unknown":
-        return extracted_name.strip()
-
     stem = Path(filename).stem
     stem = re.sub(r"[_\-]+", " ", stem)
     stem = re.sub(
@@ -31,6 +28,11 @@ def resolve_candidate_name(extracted_name: str, filename: str) -> str:
     )
     stem = re.sub(r"\s+", " ", stem).strip(" -_")
 
+    generic_names = {"resume", "cv", "candidate", "profile", "final", "updated", "latest"}
+    if stem and stem.lower() not in generic_names:
+        return stem.title()
+    if extracted_name and extracted_name != "Unknown":
+        return extracted_name.strip()
     return stem.title() if stem else "Unknown"
 
 
