@@ -215,7 +215,7 @@ def api_match():
     jd_text = request.form.get("job_description", "").strip()
     files, file_error = _collect_files()
     try:
-        candidate_limit = max(1, min(int(request.form.get("candidate_limit", "1")), 100))
+        candidate_limit = max(1, int(request.form.get("candidate_limit", "1")))
     except (TypeError, ValueError):
         candidate_limit = 1
 
